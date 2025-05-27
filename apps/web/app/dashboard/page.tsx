@@ -14,6 +14,8 @@ export default function Dashboard() {
     }
   };
 
+  const getStatus = () => (Math.random() > 0.5 ? '✅ Up' : '❌ Down');
+
   return (
     <main style={{ padding: '2rem' }}>
       <h1>📡 PingPulse Dashboard</h1>
@@ -23,14 +25,16 @@ export default function Dashboard() {
           placeholder="Enter URL to monitor"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          style={{ marginRight: '1rem' }}
+          style={{ marginRight: '1rem', padding: '0.5rem' }}
         />
-        <button type="submit">Add</button>
+        <button type="submit" style={{ padding: '0.5rem 1rem' }}>Add</button>
       </form>
 
-      <ul style={{ marginTop: '1rem' }}>
+      <ul style={{ marginTop: '1.5rem', listStyle: 'none', padding: 0 }}>
         {urls.map((u, i) => (
-          <li key={i}>{u}</li>
+          <li key={i} style={{ marginBottom: '0.75rem' }}>
+            <strong>{u}</strong> — <span>{getStatus()}</span>
+          </li>
         ))}
       </ul>
     </main>
