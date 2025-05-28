@@ -2,19 +2,29 @@
 
 import { useState } from 'react';
 
+type MonitoredURL = {
+  address: string;
+  history: string[];
+};
+
 export default function Dashboard() {
   const [url, setUrl] = useState('');
-  const [urls, setUrls] = useState<string[]>([]);
+  const [urls, setUrls] = useState<MonitoredURL[]>([]);
+
+  const generateHistory = () =>
+    Array.from({ length: 5 }, () => (Math.random() > 0.5 ? '✅' : '❌'));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url) {
-      setUrls((prev) => [...prev, url]);
+    if (url.trim()) {
+      const newURL: MonitoredURL = {
+        address: url.trim(),
+        history: generateHistory(),
+      };
+      setUrls((prev) => [...prev, newURL]);
       setUrl('');
     }
   };
-
-  const getStatus = () => (Math.random() > 0.5 ? '✅ Up' : '❌ Down');
 
   return (
     <main style={{ padding: '2rem' }}>
@@ -31,9 +41,12 @@ export default function Dashboard() {
       </form>
 
       <ul style={{ marginTop: '1.5rem', listStyle: 'none', padding: 0 }}>
-        {urls.map((u, i) => (
-          <li key={i} style={{ marginBottom: '0.75rem' }}>
-            <strong>{u}</strong> — <span>{getStatus()}</span>
+        {urls.map((item, i) => (
+          <li key={i} style={{ marginBottom: '1rem' }}>
+            <strong>{item.address}</strong> — {item.history[0] === '✅' ? '🟢 Up' : '🔴 Down'}
+            <div style={{ fontSize: '0.9rem', marginTop: '0.25rem' }}>
+              Uptime Log: {item.history.join(' ')}
+            </div>
           </li>
         ))}
       </ul>
