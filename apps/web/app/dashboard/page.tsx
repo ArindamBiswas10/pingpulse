@@ -11,18 +11,31 @@ export default function Dashboard() {
   const [url, setUrl] = useState('');
   const [urls, setUrls] = useState<MonitoredURL[]>([]);
 
-  const generateHistory = () =>
-    Array.from({ length: 5 }, () => (Math.random() > 0.5 ? '✅' : '❌'));
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (url.trim()) {
-      const newURL: MonitoredURL = {
-        address: url.trim(),
-        history: generateHistory(),
-      };
-      setUrls((prev) => [...prev, newURL]);
-      setUrl('');
+    if (!url.trim()) return;
+
+    try {
+      const res = await fetch('/api/add-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        const newURL: MonitoredURL = {
+          address: url.trim(),
+          history: ['✅'], // Temporarily adding dummy history
+        };
+        setUrls((prev) => [...prev, newURL]);
+        setUrl('');
+      } else {
+        console.error('API error:', data.message);
+      }
+    } catch (err) {
+      console.error('Failed to send URL:', err);
     }
   };
 
